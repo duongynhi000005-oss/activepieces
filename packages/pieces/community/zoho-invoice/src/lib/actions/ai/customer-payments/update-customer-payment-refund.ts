@@ -61,18 +61,28 @@ export const updateCustomerPaymentRefundAction = createAction({
 			paymentId,
 			refundId,
 		});
+		const currentRefund = current.payment_refund ?? current.payment_refunds;
 		return await zohoInvoiceApi.updateCustomerPaymentRefund({
 			auth,
 			organizationId,
 			paymentId,
 			refundId,
-			body: zohoInvoiceUtils.compact({
-				date: propsValue.date ?? current.payment_refunds?.date,
-				amount: propsValue.amount ?? current.payment_refunds?.amount,
-				refund_mode: propsValue.refundMode,
-				reference_number: propsValue.referenceNumber,
-				description: propsValue.description,
-			}),
+			body: {
+				...zohoInvoiceUtils.compact({
+					date: currentRefund?.date,
+					amount: currentRefund?.amount,
+					refund_mode: currentRefund?.refund_mode,
+					reference_number: currentRefund?.reference_number,
+					description: currentRefund?.description,
+				}),
+				...zohoInvoiceUtils.compact({
+					date: propsValue.date,
+					amount: propsValue.amount,
+					refund_mode: propsValue.refundMode,
+					reference_number: propsValue.referenceNumber,
+					description: propsValue.description,
+				}),
+			},
 		});
 	},
 });

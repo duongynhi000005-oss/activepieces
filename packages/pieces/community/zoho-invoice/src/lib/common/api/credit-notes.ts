@@ -320,8 +320,8 @@ async function getCreditNoteRefund({
 	auth: ZohoInvoiceAuthValue;
 	creditNoteId: string;
 	refundId: string;
-}): Promise<ZohoInvoiceResponse> {
-	return await zohoInvoiceClient.request<ZohoInvoiceResponse>({
+}): Promise<ZohoInvoiceCreditNoteRefundResponse> {
+	return await zohoInvoiceClient.request<ZohoInvoiceCreditNoteRefundResponse>({
 		auth,
 		organizationId,
 		method: HttpMethod.GET,
@@ -494,5 +494,15 @@ export type ZohoInvoiceCreditNoteResponse = ZohoInvoiceResponse & {
 		date?: string;
 		creditnote_number?: string;
 		line_items?: ZohoInvoiceCreditNoteLineItem[];
+	};
+};
+
+export type ZohoInvoiceCreditNoteRefundResponse = ZohoInvoiceResponse & {
+	creditnote_refund?: {
+		date?: string;
+		amount?: number;
+		refund_mode?: string;
+		reference_number?: string;
+		description?: string;
 	};
 };

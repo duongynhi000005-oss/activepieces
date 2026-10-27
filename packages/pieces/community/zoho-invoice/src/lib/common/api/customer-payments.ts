@@ -247,6 +247,15 @@ export type ZohoInvoiceCustomerPaymentResponse = ZohoInvoiceResponse & {
 	};
 };
 
+export type ZohoInvoiceCustomerPaymentRefund = {
+	date?: string;
+	amount?: number;
+	refund_mode?: string;
+	reference_number?: string;
+	description?: string;
+};
+
 export type ZohoInvoiceCustomerPaymentRefundResponse = ZohoInvoiceResponse & {
-	payment_refunds?: { date?: string; amount?: number };
+	payment_refund?: ZohoInvoiceCustomerPaymentRefund;
+	payment_refunds?: ZohoInvoiceCustomerPaymentRefund;
 };

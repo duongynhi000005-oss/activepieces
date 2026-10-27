@@ -54,18 +54,34 @@ export const updateCreditNoteRefundAction = createAction({
 		}),
 	},
 	async run({ auth, propsValue }) {
+		const { organizationId, creditNoteId, refundId } = propsValue;
+		const current = await zohoInvoiceApi.getCreditNoteRefund({
+			auth,
+			organizationId,
+			creditNoteId,
+			refundId,
+		});
 		return await zohoInvoiceApi.updateCreditNoteRefund({
 			auth,
-			organizationId: propsValue.organizationId,
-			creditNoteId: propsValue.creditNoteId,
-			refundId: propsValue.refundId,
-			body: zohoInvoiceUtils.compact({
-				date: propsValue.date,
-				amount: propsValue.amount,
-				refund_mode: propsValue.refundMode,
-				reference_number: propsValue.referenceNumber,
-				description: propsValue.description,
-			}),
+			organizationId,
+			creditNoteId,
+			refundId,
+			body: {
+				...zohoInvoiceUtils.compact({
+					date: current.creditnote_refund?.date,
+					amount: current.creditnote_refund?.amount,
+					refund_mode: current.creditnote_refund?.refund_mode,
+					reference_number: current.creditnote_refund?.reference_number,
+					description: current.creditnote_refund?.description,
+				}),
+				...zohoInvoiceUtils.compact({
+					date: propsValue.date,
+					amount: propsValue.amount,
+					refund_mode: propsValue.refundMode,
+					reference_number: propsValue.referenceNumber,
+					description: propsValue.description,
+				}),
+			},
 		});
 	},
 });
