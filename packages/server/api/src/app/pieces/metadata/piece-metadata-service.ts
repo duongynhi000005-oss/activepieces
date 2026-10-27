@@ -70,7 +70,9 @@ export const pieceMetadataService = (log: FastifyBaseLogger) => {
             if (isNil(piece)) {
                 return undefined
             }
-            const [translatedPiece] = await translatePieces({ pieces: [piece], locale: locale ?? LocalesEnum.ENGLISH })
+            const translatedPiece = isNil(locale)
+                ? { ...piece, i18n: await pieceTranslationService.getForPiece({ pieceId: piece.id }) ?? piece.i18n }
+                : (await translatePieces({ pieces: [piece], locale }))[0]
 
             const policy = await resolveVisibility({ platformId, projectId, log })
             if (isNil(policy)) {

@@ -33,6 +33,7 @@ describe('piece translations stored per locale', () => {
             description: 'Send a message',
             i18n: {
                 [LocalesEnum.GERMAN]: { 'Send a message': 'Eine Nachricht senden' },
+                [LocalesEnum.JAPANESE]: { 'Send a message': 'メッセージを送信' },
             },
         })
         const saved = await pieceMetadataService(mockLog).create({
@@ -44,10 +45,11 @@ describe('piece translations stored per locale', () => {
         await pieceCache(mockLog).setup()
         const headers = { authorization: `Bearer ${await generateMockToken({ type: PrincipalType.UNKNOWN, id: apId() })}` }
 
-        const [germanList, germanSingle, frenchSingle] = await Promise.all([
+        const [germanList, germanSingle, frenchSingle, unlocalizedSingle] = await Promise.all([
             app?.inject({ method: 'GET', url: '/api/v1/pieces?locale=de', headers }),
             app?.inject({ method: 'GET', url: '/api/v1/pieces/translated-on-create?locale=de', headers }),
             app?.inject({ method: 'GET', url: '/api/v1/pieces/translated-on-create?locale=fr', headers }),
+            app?.inject({ method: 'GET', url: '/api/v1/pieces/translated-on-create', headers }),
         ])
 
         expect(saved.id).toBe(syncedMetadata.id)
@@ -55,6 +57,10 @@ describe('piece translations stored per locale', () => {
         expect(germanSingle?.json().description).toBe('Eine Nachricht senden')
         expect(frenchSingle?.json().description).toBe('Send a message')
         expect(germanSingle?.json().i18n).toBeUndefined()
+        expect(unlocalizedSingle?.json().i18n).toEqual({
+            [LocalesEnum.GERMAN]: { 'Send a message': 'Eine Nachricht senden' },
+            [LocalesEnum.JAPANESE]: { 'Send a message': 'メッセージを送信' },
+        })
     })
 
     it('are saved with characters Postgres jsonb rejects stripped from keys and values', async () => {
