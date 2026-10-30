@@ -115,6 +115,7 @@ export const apUpdateStepTool = ({ mcp, userId }: McpToolContext, log: FastifyBa
                 }
             }
             const pieceVersionChanged = updatedSettings.pieceVersion !== currentSettings.pieceVersion
+            const actionNameChanged = actionName !== undefined && actionName !== currentSettings.actionName
             if (rewritten.loopItems !== undefined) {
                 if (step.type === FlowActionType.LOOP_ON_ITEMS) {
                     updatedSettings.items = rewritten.loopItems
@@ -149,7 +150,7 @@ export const apUpdateStepTool = ({ mcp, userId }: McpToolContext, log: FastifyBa
                 })
             }
 
-            if (step.type === FlowActionType.PIECE && (input !== undefined || pieceVersionChanged)) {
+            if (step.type === FlowActionType.PIECE && (input !== undefined || pieceVersionChanged || actionNameChanged)) {
                 await mcpUtils.fillDefaultsForMissingOptionalProps({
                     settings: updatedSettings,
                     platformId: project.platformId,
@@ -167,7 +168,7 @@ export const apUpdateStepTool = ({ mcp, userId }: McpToolContext, log: FastifyBa
                         return unknownPropsError
                     }
                     updatedSettings.input = knownInput
-                    const changedKeys = Object.keys(pieceVersionChanged ? knownInput : callerInput)
+                    const changedKeys = Object.keys(pieceVersionChanged || actionNameChanged ? knownInput : callerInput)
                     updatedSettings.propertySettings = await mcpUtils.resolveDynamicPropertySettings({ pieceName, pieceVersion, componentName: resolvedActionName, componentType: 'action', input: knownInput, propertySettings: currentSettings.propertySettings, changedKeys, projectId: mcp.projectId, platformId: project.platformId, log })
                 }
             }
